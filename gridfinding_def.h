@@ -14,9 +14,13 @@ extern volatile int infoEindPosOpgehaald;
 extern volatile int homeSenderDone;
 extern volatile int startSlot;
 
-// === Pinnen ===
+// === Pinnen start ===
 #define pinStartKnop PF6
 #define portStartKnop PORTF
+
+// === Pinnen magneet ===
+#define pinMagneet PD7
+#define portMagneet PORTD
 
 // switches X-pos
 #define pos_X1 PB0
@@ -32,7 +36,10 @@ extern volatile int startSlot;
 #define pos_Y4 PF0
 #define pos_Y5 PF1
 
-// H-brug pinnen
+// switches Z-pos
+#define pos_Z PD6
+
+// H-brug pinnen x/y
 #define pinHBrug_RechtsOm_X PF2
 #define pinHBrug_RechtsOm_Y PF3
 #define pinHBrug_LinksOm_X  PF4
@@ -41,9 +48,17 @@ extern volatile int startSlot;
 #define portHBrug_X PORTF
 #define portHBrug_Y PORTF
 
+// H-brug pinnen z
+#define pinHBrug_RechtsOm_Z PD4
+#define pinHBrug_LinksOm_Z PD5
+
+#define portHBrug_Z PORTD
+
 // pin check
 #define PIN_pos_XY PINB
 #define PIN_pos_Y  PINF
+#define PIN_pos_Z  PIND
+
 
 // Keypad
 #define ROWS 4
@@ -53,9 +68,19 @@ extern volatile int startSlot;
 #define ROW_PIN  PIND
 #define ROW_DDR  DDRD
 
+#define Pin_Row_line1 PD0
+#define Pin_Row_line2 PD1
+#define Pin_Row_line3 PD2
+#define Pin_Row_line4 PD3
+
 #define COL_PORT PORTC
 #define COL_PIN  PINC
 #define COL_DDR  DDRC
+
+#define Pin_Col_line1 PC0
+#define Pin_Col_line2 PC1
+#define Pin_Col_line3 PC2
+#define Pin_Col_line4 PC3
 
 // === Functieprototypes ===
 void xNuFinder(void);

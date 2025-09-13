@@ -17,6 +17,20 @@ static const char keys[ROWS][COLS] = {
     {'*','0','#','D'}
 };
 
+/*static const char pin_1[ROWS][COLS] = {
+    {PD0,PD0,PD0,PD0},
+    {PD1,PD1,PD1,PD1},
+    {PD2,PD2,PD2,PD2},
+    {PD3,PD3,PD3,PD3}
+};
+
+static const char pin_2[ROWS][COLS] = {
+    {PC0,PC1,PC2,PC3},
+    {PC0,PC1,PC2,PC3},
+    {PC0,PC1,PC2,PC3},
+    {PC0,PC1,PC2,PC3}
+};*/
+
 // Positiebepaling
 void xNuFinder(void) {
     if (PIN_pos_XY & (1 << pos_X1)) xNu = 1;
@@ -34,6 +48,17 @@ void yNuFinder(void) {
     if (PIN_pos_Y  & (1 << pos_Y5)) yNu = 5;
 }
 
+/*char keypad_getkey_alt(void) {
+    for (int r = 0; r < ROWS; r++) {
+        for (int c = 0; c < COLS; c++) {
+            if PIND & (1 << pin_1[r][c]) && PINC & (1 << pin_2[r][c]) {
+                return keys[r][c];
+            }
+        }
+    }
+    return 0;
+}*/
+
 // Keypad uitlezen
 char keypad_getkey(void) {
     for (int r = 0; r < ROWS; r++) {
@@ -48,7 +73,7 @@ char keypad_getkey(void) {
             }
         }
     }
-    return '0';
+    return 0;
 }
 
 // Pickup positie

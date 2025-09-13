@@ -59,7 +59,7 @@ int main(void) {
             }
 
             if ((xNu == xEind) && (yNu == yEind) && (startSlot == 1)) {
-                // hier zou de Z-as aangestuurd worden
+                motorZ();
                 infoEindPosOpgehaald = 0;
             }
         }
