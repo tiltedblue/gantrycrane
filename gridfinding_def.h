@@ -9,10 +9,18 @@ extern volatile int yNu;
 extern volatile int xEind;
 extern volatile int yEind;
 
-extern volatile int info_X_Opgehaald;
+extern volatile int xEindDropOf;
+extern volatile int yEindDropOf;
+
 extern volatile int infoEindPosOpgehaald;
+extern volatile int infoEindPosOpgehaald2;
 extern volatile int homeSenderDone;
+
+extern volatile int startKnop;
 extern volatile int startSlot;
+
+extern volatile int heenTerug;
+
 
 // === Pinnen start ===
 #define pinStartKnop PF6
@@ -21,6 +29,12 @@ extern volatile int startSlot;
 // === Pinnen magneet ===
 #define pinMagneet PD7
 #define portMagneet PORTD
+
+// === Pinnen noodknop ===
+#define pinNoodKnop PC4
+#define portNoodKnop PORTC
+#define PIN_NoodKnop  PINC
+
 
 // switches X-pos
 #define pos_X1 PB0
@@ -82,16 +96,46 @@ extern volatile int startSlot;
 #define Pin_Col_line3 PC2
 #define Pin_Col_line4 PC3
 
+// === Enums ===
+
+enum MagnetState {
+    Get = 1,
+    Drop = 2
+};
+
 // === Functieprototypes ===
+
+// Position Detection
 void xNuFinder(void);
 void yNuFinder(void);
-void homeSender(void);
-void pickUp_and_DropOff_pos(void);
-char keypad_getkey(void);
 
+// Keypad Handling
+char keypad_getkey(void);
+void processKey(char key);
+void pickUp_and_DropOff_pos(void);
+void keypad_init(void);
+
+// Motor Control
+int motorX(int richting);
+int motorY(int richting);
+int motorZ(int opNeer);
+
+// Position / Direction Comparison
 int xNu_TOV_xEind(int nu, int eind);
 int yNu_TOV_yEind(int nu, int eind);
-int motorX(int xPos);
-int motorY(int yPos);
+
+// Homing & Coordination
+void homeSender(void);
+void coordSwitcheroo(void);
+
+// Magnet Handling
+int oppakProgrammaatje(enum MagnetState);
+
+// Reset / End of Cycle
+void eindProgrammaatje(void);
+
+// Timer
+void init_timer1(void);
+
 
 #endif
