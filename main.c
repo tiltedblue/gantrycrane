@@ -14,6 +14,11 @@ volatile int xNu = 0, yNu = 0;
 volatile int xEind = 0, yEind = 0;
 volatile int xEindDropOf = 0, yEindDropOf = 0;
 
+volatile int xEind2 = 0, yEind2 = 0;
+volatile int xEindDropOf2 = 0, yEindDropOf2 = 0;
+
+volatile int tweedeBlokjeNeer = 0;
+
 // Statusflags
 volatile int infoEindPosOpgehaald = 0;
 volatile int infoEindPosOpgehaald2 = 0;
@@ -64,9 +69,16 @@ int main(void) {
 
             if((infoEindPosOpgehaald == 0) || (infoEindPosOpgehaald2 == 0)) pickUp_and_DropOff_pos();
 
-            if ((infoEindPosOpgehaald == 1) && (startSlot == 1) && (infoEindPosOpgehaald2 == 1)) {
-                motorX(xNu_TOV_xEind(xNu, xEind));
-                motorY(yNu_TOV_yEind(yNu, yEind));
+            if(PIN_SwitchTweedeCoord & (1 << pinSwitchTweedeCoord)){
+                if ((infoEindPosOpgehaald == 1) && (startSlot == 1) && (infoEindPosOpgehaald2 == 1)) {
+                    motorX(xNu_TOV_xEind(xNu, xEind));
+                    motorY(yNu_TOV_yEind(yNu, yEind));
+                }
+            }else{
+                if ((infoEindPosOpgehaald == 1) && (startSlot == 1)) {
+                    motorX(xNu_TOV_xEind(xNu, xEind));
+                    motorY(yNu_TOV_yEind(yNu, yEind));
+                }
             }
 
             if ((xNu == xEind) && (yNu == yEind) && (startSlot == 1)) {
@@ -77,3 +89,7 @@ int main(void) {
     }
     return 0;
 }
+
+//to do: infoEindPosOpgehaald .... fixen
+//if voor of de switch coord2 is ingedrukt en daar boundries voor zetten
+//code om nog twee keer door de code heen te gaan

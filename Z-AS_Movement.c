@@ -2,25 +2,53 @@
 #include <util/delay.h>
 #include "gridfinding_def.h"
 
-void coordSwitcheroo(void){
-    xEind = xEindDropOf;
-    yEind = yEindDropOf;
-    heenTerug = 2;
+int coordSwitchCount = 0;
+
+void coordSwitch(void){
+    switch(coordSwitchCount){
+
+        case 0:
+            xEind = xEindDropOf;
+            yEind = yEindDropOf;
+            if(PIN_SwitchTweedeCoord & (1 << pinSwitchTweedeCoord)){
+                coordSwitchCount = 1;
+                tweedeBlokjeNeer = 1;
+            }
+            heenTerug = 2;
+        break;
+
+        case 1:
+            xEind = xEind2;
+            yEind = yEind2;
+            coordSwitchCount = 2;
+            heenTerug = 1;
+        break;
+
+        case 2:
+            xEind = xEindDropOf2;
+            yEind = yEindDropOf2;
+            coordSwitchCount = 1;
+            tweedeBlokjeNeer = 0;
+            heenTerug = 2;
+        break;
+    }
+
 }
 
-int oppakProgrammaatje(enum MagnetState state){
+int oppakProgramma(enum MagnetState state){
     if(state == Get) portMagneet &= ~(1 << pinMagneet);
     if(state == Drop) portMagneet |= (1 << pinMagneet);
 
     return 0;
 }
 
-void eindProgrammaatje(void){
+void eindProgramma(void){
     heenTerug = 1;
-    portMagneet |= (1 << pinMagneet);
+    coordSwitchCount = 0;
     infoEindPosOpgehaald = 0;
     infoEindPosOpgehaald2 = 0;
     homeSender();
+    motorenUit();
     startSlot = 0;
     homeSenderDone = 0;
     startKnop = 0;
@@ -31,24 +59,26 @@ int motorZ(int opNeer) {  //links-/rechts-om zorgen bij de z-as voor en beweging
         while ((PIN_pos_Z & (1 << pos_Z)) == 0) portHBrug_Z &= ~(1 << pinHBrug_RechtsOm_Z);
         portHBrug_Z |=  (1 << pinHBrug_RechtsOm_Z);
 
-        oppakProgrammaatje(opNeer); //object vast
+        oppakProgramma(opNeer); //object vast
 
         while ((PIN_pos_Z & (1 << pos_Z)) == 0) portHBrug_Z &= ~(1 << pinHBrug_LinksOm_Z);
         portHBrug_Z |=  (1 << pinHBrug_LinksOm_Z);
 
-        coordSwitcheroo();
+        coordSwitch();
     }
 
     if(opNeer == 2){
         while ((PIN_pos_Z & (1 << pos_Z)) == 0) portHBrug_Z &= ~(1 << pinHBrug_LinksOm_Z);
         portHBrug_Z |=  (1 << pinHBrug_LinksOm_Z);
 
-        oppakProgrammaatje(opNeer); //object los
+        oppakProgramma(opNeer); //object los
 
         while ((PIN_pos_Z & (1 << pos_Z)) == 0) portHBrug_Z &= ~(1 << pinHBrug_RechtsOm_Z);
         portHBrug_Z |=  (1 << pinHBrug_RechtsOm_Z);
 
-        eindProgrammaatje();
+        if(tweedeBlokjeNeer == 0){
+            eindProgramma();
+        }
 
 
     }

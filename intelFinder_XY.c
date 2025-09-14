@@ -15,7 +15,12 @@ enum InputState {
     PICKUP_X,
     PICKUP_Y,
     DROPOFF_X,
-    DROPOFF_Y
+    DROPOFF_Y,
+    PICKUP_X2,
+    PICKUP_Y2,
+    DROPOFF_X2,
+    DROPOFF_Y2,
+
 };
 
 enum InputState inputState = IDLE;
@@ -62,6 +67,10 @@ void processKey(char key) {
                 inputState = PICKUP_X;
             } else if (key == 'B') {
                 inputState = DROPOFF_X;
+            } else if ((key == 'C') && (PIN_SwitchTweedeCoord & (1 << pinSwitchTweedeCoord))) {
+                inputState = PICKUP_X2;
+            } else if ((key == 'D') && (PIN_SwitchTweedeCoord & (1 << pinSwitchTweedeCoord))) {
+                inputState = DROPOFF_X2;
             }
             if((infoEindPosOpgehaald == 1) && (infoEindPosOpgehaald2 == 1)){
                 break;
@@ -74,6 +83,7 @@ void processKey(char key) {
                 xEind = key - '0';
                 inputState = PICKUP_Y;
             } else {
+                infoEindPosOpgehaald = 0;
                 inputState = IDLE;  // wrong key cancels
             }
             break;
@@ -84,6 +94,7 @@ void processKey(char key) {
                 infoEindPosOpgehaald = 1;
                 inputState = IDLE;
             } else {
+                infoEindPosOpgehaald = 0;
                 inputState = IDLE;  // wrong key cancels
             }
             break;
@@ -93,6 +104,7 @@ void processKey(char key) {
                 xEindDropOf = key - '0';
                 inputState = DROPOFF_Y;
             } else {
+                infoEindPosOpgehaald = 0;
                 inputState = IDLE;
             }
             break;
@@ -100,9 +112,52 @@ void processKey(char key) {
         case DROPOFF_Y:
             if (key >= '1' && key <= '5') {
                 yEindDropOf = key - '0';
+                infoEindPosOpgehaald = 1;
+                inputState = IDLE;
+            } else {
+                infoEindPosOpgehaald = 0;
+                inputState = IDLE;
+            }
+            break;
+
+        case PICKUP_X2:
+            if (key >= '1' && key <= '5') {
+                xEind2 = key - '0';
+                inputState = PICKUP_Y2;
+            } else {
+                infoEindPosOpgehaald2 = 0;
+                inputState = IDLE;  // wrong key cancels
+            }
+            break;
+
+        case PICKUP_Y2:
+            if (key >= '1' && key <= '5') {
+                yEind2 = key - '0';
                 infoEindPosOpgehaald2 = 1;
                 inputState = IDLE;
             } else {
+                infoEindPosOpgehaald2 = 0;
+                inputState = IDLE;  // wrong key cancels
+            }
+            break;
+
+        case DROPOFF_X2:
+            if (key >= '1' && key <= '5') {
+                xEindDropOf2 = key - '0';
+                inputState = DROPOFF_Y2;
+            } else {
+                infoEindPosOpgehaald2 = 0;
+                inputState = IDLE;
+            }
+            break;
+
+        case DROPOFF_Y2:
+            if (key >= '1' && key <= '5') {
+                yEindDropOf2 = key - '0';
+                infoEindPosOpgehaald2 = 1;
+                inputState = IDLE;
+            } else {
+                infoEindPosOpgehaald2 = 0;
                 inputState = IDLE;
             }
             break;

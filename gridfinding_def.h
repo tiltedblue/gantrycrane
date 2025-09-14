@@ -12,6 +12,11 @@ extern volatile int yEind;
 extern volatile int xEindDropOf;
 extern volatile int yEindDropOf;
 
+extern volatile int xEind2, yEind2;
+extern volatile int xEindDropOf2, yEindDropOf2;
+
+extern volatile int tweedeBlokjeNeer;
+
 extern volatile int infoEindPosOpgehaald;
 extern volatile int infoEindPosOpgehaald2;
 extern volatile int homeSenderDone;
@@ -35,6 +40,10 @@ extern volatile int heenTerug;
 #define portNoodKnop PORTC
 #define PIN_NoodKnop  PINC
 
+// === Pinnen switch tweede coordinaten ===
+#define pinSwitchTweedeCoord PC5
+#define portSwitchTweedeCoord PORTC
+#define PIN_SwitchTweedeCoord  PINC
 
 // switches X-pos
 #define pos_X1 PB0
@@ -120,19 +129,21 @@ int motorX(int richting);
 int motorY(int richting);
 int motorZ(int opNeer);
 
+void motorenUit(void);
+
 // Position / Direction Comparison
 int xNu_TOV_xEind(int nu, int eind);
 int yNu_TOV_yEind(int nu, int eind);
 
 // Homing & Coordination
 void homeSender(void);
-void coordSwitcheroo(void);
+void coordSwitch(void);
 
 // Magnet Handling
-int oppakProgrammaatje(enum MagnetState);
+int oppakProgramma(enum MagnetState);
 
 // Reset / End of Cycle
-void eindProgrammaatje(void);
+void eindProgramma(void);
 
 // Timer
 void init_timer1(void);

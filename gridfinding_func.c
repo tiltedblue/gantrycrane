@@ -67,4 +67,8 @@ void motorenUit(void){
     portHBrug_X |=  (1 << pinHBrug_LinksOm_X);
     portHBrug_Y |=  (1 << pinHBrug_RechtsOm_Y);
     portHBrug_Y |=  (1 << pinHBrug_LinksOm_Y);
+    portHBrug_Z |=  (1 << pinHBrug_RechtsOm_Z);
+    portHBrug_Z |=  (1 << pinHBrug_LinksOm_Z);
+
+    portMagneet |= (1 << pinMagneet);
 }
