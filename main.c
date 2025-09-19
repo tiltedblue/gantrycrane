@@ -1,7 +1,11 @@
+#include <stdio.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include "gridfinding_def.h"
+#include "usart0_async.h"
+
+#define F_CPU 16000000UL
 
 // === Definitie globale variabelen ===
 volatile int startKnop = 0;
@@ -65,14 +69,54 @@ ISR(TIMER1_OVF_vect) {
     TCNT1 = 63973; // reset timer
 }
 
+// ---------- UART0 setup ----------
+static void usart0_init(uint32_t baud)
+{
+    UCSR0A = _BV(U2X0); // normal speed
+    uint16_t ubrr = (F_CPU / (8UL * baud)) - 1;
+
+
+    //uint16_t ubrr = (F_CPU / (16UL * baud)) - 1;
+    //UCSR0A = 0; // normal speed
+    UBRR0H = (uint8_t)(ubrr >> 8);
+    UBRR0L = (uint8_t)(ubrr);
+    UCSR0B = _BV(TXEN0) | _BV(RXEN0);          // enable TX,RX
+    UCSR0C = _BV(UCSZ01) | _BV(UCSZ00);        // 8 data, 1 stop, no parity
+}
+
+static void usart0_write_char(char c)
+{
+    while (!(UCSR0A & _BV(UDRE0))) { }         // wait until ready
+    UDR0 = c;
+}
+
+// Glue so printf works
+static int usart0_putchar(char c, FILE *stream)
+{
+    if (c == '\n') {
+        usart0_write_char('\r');
+    }
+    usart0_write_char(c);
+    return 0;
+}
+
+// Declare a FILE object
+static FILE usart0_stdout = FDEV_SETUP_STREAM(usart0_putchar, NULL, _FDEV_SETUP_WRITE);
+
 // === Main loop ===
 int main(void) {
+
+    usart0_init(115200);
+    stdout = &usart0_stdout; // enable printf to UART0
+
+    printf("Boot OK\n");
+
     init_timer1();
     keypad_init();
     init_Crane();
 
     while (1) {
-        if ((PIN_pos_XY & (1 << pos_X1)) || (startKnop == 1)) {
+        if ((PINF & (1 << pinStartKnop)) || (startKnop == 1)) {
             startKnop = 1;
 
             if (homeSenderDone == 0) homeSender();
