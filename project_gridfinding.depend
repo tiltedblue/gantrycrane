@@ -2,16 +2,17 @@
 1757611815 source:c:\users\pimsc\onedrive - de haagse hogeschool\bureaublad\project 1\programma's\project_gridfinding\fuse.c
 	<avr/io.h>
 
-1757753849 source:c:\users\pimsc\onedrive - de haagse hogeschool\bureaublad\project 1\programma's\project_gridfinding\main.c
+1758312918 source:c:\users\pimsc\onedrive - de haagse hogeschool\bureaublad\project 1\programma's\project_gridfinding\main.c
+	<stdio.h>
 	<avr/io.h>
 	<avr/interrupt.h>
 	<util/delay.h>
 	"gridfinding_def.h"
 
-1757754356 c:\users\pimsc\onedrive - de haagse hogeschool\bureaublad\project 1\programma's\project_gridfinding\gridfinding_def.h
+1758305005 c:\users\pimsc\onedrive - de haagse hogeschool\bureaublad\project 1\programma's\project_gridfinding\gridfinding_def.h
 	<avr/io.h>
 
-1757753783 source:c:\users\pimsc\onedrive - de haagse hogeschool\bureaublad\project 1\programma's\project_gridfinding\gridfinding_func.c
+1758305878 source:c:\users\pimsc\onedrive - de haagse hogeschool\bureaublad\project 1\programma's\project_gridfinding\gridfinding_func.c
 	<avr/io.h>
 	"gridfinding_def.h"
 
@@ -23,13 +24,18 @@
 	"gridfinding_def.h"
 	"intelFinder_XY.c"
 
-1757752884 source:c:\users\pimsc\onedrive - de haagse hogeschool\bureaublad\project 1\programma's\project_gridfinding\intelfinder_xy.c
+1757869671 source:c:\users\pimsc\onedrive - de haagse hogeschool\bureaublad\project 1\programma's\project_gridfinding\intelfinder_xy.c
 	<avr/io.h>
 	<util/delay.h>
 	"gridfinding_def.h"
 
-1757754324 source:c:\users\pimsc\onedrive - de haagse hogeschool\bureaublad\project 1\programma's\project_gridfinding\z-as_movement.c
+1757870327 source:c:\users\pimsc\onedrive - de haagse hogeschool\bureaublad\project 1\programma's\project_gridfinding\z-as_movement.c
 	<avr/io.h>
 	<util/delay.h>
 	"gridfinding_def.h"
+
+1758306617 c:\users\pimsc\onedrive - de haagse hogeschool\bureaublad\project 1\programma's\project_gridfinding\usart0_async.h
+	<avr/io.h>
+	<avr/interrupt.h>
+	<string.h>
 
