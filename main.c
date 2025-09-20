@@ -1,11 +1,11 @@
+#define F_CPU 16000000UL
+
 #include <stdio.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include "gridfinding_def.h"
-#include "usart0_async.h"
-
-#define F_CPU 16000000UL
+//#include "usart0_async.h"
 
 // === Definitie globale variabelen ===
 volatile int startKnop = 0;
@@ -34,6 +34,8 @@ void init_Crane(void) {
     DDRC = 0b00000000;
     DDRB = 0b00000000;
     DDRA = 0b00000111;
+
+    PORTC |= (1 << pinNoodKnop);
 }
 
 // === Timer1 init ===
@@ -57,11 +59,16 @@ void keypad_init(void) {
 
 // === Timer ISR ===
 ISR(TIMER1_OVF_vect) {
-    if(!(PIN_NoodKnop & (1 << PIN_NoodKnop))){
+    if((PIN_NoodKnop & (1 << PIN_NoodKnop))){
+            printf("nood_in\n");
         while(1){
+
             //eventueel knipperend ledje
 
-            if((PIN_NoodKnop & (1 << PIN_NoodKnop))) break;
+            if((PIN_NoodKnop & (1 << PIN_NoodKnop)) == 0) {
+                 printf("nood_out\n");
+                break;
+            }
         }
     }
     xNuFinder();
@@ -107,16 +114,22 @@ static FILE usart0_stdout = FDEV_SETUP_STREAM(usart0_putchar, NULL, _FDEV_SETUP_
 int main(void) {
 
     usart0_init(115200);
-    stdout = &usart0_stdout; // enable printf to UART0
+    stdout = &usart0_stdout; // enable printf to UART;
 
     printf("Boot OK\n");
+    fflush(stdout);
+
+    printf("Boot OK1\n");
+    fflush(stdout);
 
     init_timer1();
     keypad_init();
     init_Crane();
 
     while (1) {
+        fflush(stdout);
         if ((PINF & (1 << pinStartKnop)) || (startKnop == 1)) {
+            printf("Startknop\n");
             startKnop = 1;
 
             if (homeSenderDone == 0) homeSender();
@@ -147,3 +160,5 @@ int main(void) {
 //to do: infoEindPosOpgehaald .... fixen
 //if voor of de switch coord2 is ingedrukt en daar boundries voor zetten
 //code om nog twee keer door de code heen te gaan
+
+// fout in noodstop
