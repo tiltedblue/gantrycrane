@@ -10,7 +10,7 @@ static const char keys[ROWS][COLS] = {
     {'*','0','#','D'}
 };
 
-enum InputState {
+typedef enum InputState {
     IDLE,
     PICKUP_X,
     PICKUP_Y,
@@ -21,9 +21,9 @@ enum InputState {
     DROPOFF_X2,
     DROPOFF_Y2,
 
-};
+} InputState;
 
-enum InputState inputState = IDLE;
+InputState inputState = IDLE;
 
 
 // Positiebepaling
