@@ -59,6 +59,9 @@ extern volatile int heenTerug;
 #define pos_Y4 PF0
 #define pos_Y5 PF1
 
+#define PORT_pos_XY PORTB
+#define PORT_pos_Y  PORTF
+
 // switches Z-pos
 #define pos_Z PA0
 
@@ -78,7 +81,7 @@ extern volatile int heenTerug;
 #define portHBrug_Z PORTD
 
 // pin check
-#define PIN_pos_XY PINB
+#define PIN_pos_XY  PINB
 #define PIN_pos_Y  PINF
 #define PIN_pos_Z  PINA
 

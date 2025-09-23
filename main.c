@@ -35,7 +35,22 @@ void init_Crane(void) {
     DDRB = 0b00000000;
     DDRA = 0b00000111;
 
-    PORTC |= (1 << pinNoodKnop);
+// === Interne pull-ups ===
+
+    portNoodKnop |= (1 << pinNoodKnop);
+    portStartKnop |= (1 << pinStartKnop);
+    PORT_pos_XY |= (1 << pos_X1);
+    PORT_pos_XY |= (1 << pos_X2);
+    PORT_pos_XY |= (1 << pos_X3);
+    PORT_pos_XY |= (1 << pos_X4);
+    PORT_pos_XY |= (1 << pos_X5);
+    PORT_pos_XY |= (1 << pos_Y1);
+    PORT_pos_XY |= (1 << pos_Y2);
+    PORT_pos_XY |= (1 << pos_Y3);
+    PORT_pos_Y |= (1 << pos_Y4);
+    PORT_pos_Y |= (1 << pos_Y5);
+
+    printf("init_crane_out\n");
 }
 
 // === Timer1 init ===
@@ -45,34 +60,30 @@ void init_timer1(void) {
     TIMSK1 = 0b00000001; // overflow interrupt enable
     sei();
     TCNT1 = 63973;       // startwaarde voor ~10 ms
+
+    printf("init_timer_out\n");
 }
 
 // === Keypad init ===
 void keypad_init(void) {
-    ROW_DDR = 0x0F;   // rijen als output
-    ROW_PORT = 0x00;
-    COL_DDR &= ~(0x0F); // kolommen als input
-    COL_PORT |= 0x0F;   // pull-ups aan
+    ROW_DDR  |= 0x0F;   // PD0–PD3 output
+    ROW_PORT &= ~0x0F;  // PD0–PD3 laag
 
+    COL_DDR  &= ~0x0F;  // PC0–PC3 input
+    COL_PORT |= 0x0F;   // pull-ups aan op PC0–PC3
 
+    printf("init_keypad_out\n");
 }
 
 // === Timer ISR ===
 ISR(TIMER1_OVF_vect) {
-    if((PIN_NoodKnop & (1 << PIN_NoodKnop))){
-            printf("nood_in\n");
-        while(1){
-
-            //eventueel knipperend ledje
-
-            if((PIN_NoodKnop & (1 << PIN_NoodKnop)) == 0) {
-                 printf("nood_out\n");
-                break;
-            }
-        }
+    if ((PIN_NoodKnop & (1 << pinNoodKnop)) == 0){
+        printf("Nood_in\n");
+    }else{
+       // printf("ISR_OUT\n");
+        xNuFinder();
+        yNuFinder();
     }
-    xNuFinder();
-    yNuFinder();
     TCNT1 = 63973; // reset timer
 }
 
@@ -122,13 +133,12 @@ int main(void) {
     printf("Boot OK1\n");
     fflush(stdout);
 
-    init_timer1();
     keypad_init();
     init_Crane();
+    init_timer1();
 
     while (1) {
-        fflush(stdout);
-        if ((PINF & (1 << pinStartKnop)) || (startKnop == 1)) {
+        if (((PINF & (1 << pinStartKnop)) == 0) || (startKnop == 1)) {
             printf("Startknop\n");
             startKnop = 1;
 

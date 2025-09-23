@@ -16,6 +16,7 @@ int yNu_TOV_yEind(int nu, int eind) {
 
 // Motorsturing
 int motorX(int richting) {
+    printf("motorX_in\n");
     switch (richting) {
         case 0: // rechtsom
             while (xNu != xEind)portHBrug_X &= ~(1 << pinHBrug_RechtsOm_X);
@@ -53,13 +54,19 @@ int motorY(int richting) {
 
 // Machine naar (1,1) sturen
 void homeSender(void) {
+    printf("homesender_in\n");
     while (xNu != 1) portHBrug_X &= ~(1 << pinHBrug_LinksOm_X);
     portHBrug_X |=  (1 << pinHBrug_LinksOm_X);
 
     while (yNu != 1) portHBrug_Y &= ~(1 << pinHBrug_LinksOm_Y);
     portHBrug_Y |=  (1 << pinHBrug_LinksOm_Y);
 
+    portHBrug_X &=  ~(1 << pinHBrug_LinksOm_X);
+    portHBrug_X &=  ~(1 << pinHBrug_LinksOm_Y);
+
     homeSenderDone = 1;
+
+    printf("homesender_out\n");
 }
 
 void motorenUit(void){
