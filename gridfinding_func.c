@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <stdio.h>
 #include "gridfinding_def.h"
 
 // Vergelijkingen

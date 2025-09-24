@@ -66,11 +66,11 @@ void init_timer1(void) {
 
 // === Keypad init ===
 void keypad_init(void) {
-    ROW_DDR  |= 0x0F;   // PD0–PD3 output
-    ROW_PORT &= ~0x0F;  // PD0–PD3 laag
+    ROW_DDR  |= 0x0F;   // PD0-PD3 output
+    ROW_PORT &= ~0x0F;  // PD0-PD3 laag
 
-    COL_DDR  &= ~0x0F;  // PC0–PC3 input
-    COL_PORT |= 0x0F;   // pull-ups aan op PC0–PC3
+    COL_DDR  &= ~0x0F;  // PC0-PC3 input
+    COL_PORT |= 0x0F;   // pull-ups aan op PC0-PC3
 
     printf("init_keypad_out\n");
 }
@@ -109,7 +109,7 @@ static void usart0_write_char(char c)
 }
 
 // Glue so printf works
-static int usart0_putchar(char c, FILE *stream)
+static int usart0_putchar(char c, __attribute__((unused)) FILE *stream) 
 {
     if (c == '\n') {
         usart0_write_char('\r');
