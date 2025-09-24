@@ -122,8 +122,8 @@ void xNuFinder(void);
 void yNuFinder(void);
 
 // Keypad Handling
-char keypad_getkey(void);
-void processKey(char key);
+int keypad_getkey(void);
+void processKey(int key);
 void pickUp_and_DropOff_pos(void);
 void keypad_init(void);
 

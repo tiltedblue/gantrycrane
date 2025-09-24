@@ -5,7 +5,6 @@
 #include <avr/interrupt.h>
 #include <util/delay.h>
 #include "gridfinding_def.h"
-//#include "usart0_async.h"
 
 // === Definitie globale variabelen ===
 volatile int startKnop = 0;
@@ -39,6 +38,7 @@ void init_Crane(void) {
 
     portNoodKnop |= (1 << pinNoodKnop);
     portStartKnop |= (1 << pinStartKnop);
+    portSwitchTweedeCoord |= (1 << pinSwitchTweedeCoord);
     PORT_pos_XY |= (1 << pos_X1);
     PORT_pos_XY |= (1 << pos_X2);
     PORT_pos_XY |= (1 << pos_X3);
@@ -128,10 +128,6 @@ int main(void) {
     stdout = &usart0_stdout; // enable printf to UART;
 
     printf("Boot OK\n");
-    fflush(stdout);
-
-    printf("Boot OK1\n");
-    fflush(stdout);
 
     keypad_init();
     init_Crane();
@@ -167,8 +163,6 @@ int main(void) {
     return 0;
 }
 
-//to do: infoEindPosOpgehaald .... fixen
-//if voor of de switch coord2 is ingedrukt en daar boundries voor zetten
-//code om nog twee keer door de code heen te gaan
+//to do:
 
-// fout in noodstop
+

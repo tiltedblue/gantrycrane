@@ -3,18 +3,6 @@
 #include <avr/interrupt.h>
 #include "gridfinding_def.h"
 
-const uint8_t rowPins[ROWS] = {0, 1, 2, 3}; // PD0�PD3
-const uint8_t colPins[COLS] = {0, 1, 2, 3}; // PC0�PC3
-
-
-// Keypad mapping
-static const char keys[ROWS][COLS] = {
-    {'1','2','3','A'},
-    {'4','5','6','B'},
-    {'7','8','9','C'},
-    {'*','0','#','D'}
-};
-
 enum InputState {
     IDLE,
     PICKUP_X,
@@ -30,6 +18,25 @@ enum InputState {
 
 enum InputState inputState = IDLE;
 
+ enum key_pressed {
+    D = 0,
+    HASH = 1,
+    ZERO = 2,
+    STAR = 3,
+    C = 4,
+    NINE = 5,
+    EIGHT = 6,
+    SEVEN = 7,
+    B = 8,
+    SIX = 9,
+    FIVE = 10,
+    FOUR = 11,
+    A = 12,
+    THREE = 13,
+    TWO = 14,
+    ONE = 15,
+
+};
 
 // Positiebepaling
 void xNuFinder(void) {
@@ -78,163 +85,172 @@ void yNuFinder(void) {
     }
 }
 
-// Keypad uitlezen
-char keypad_getkey(void) {
-    static char lastKey = 0;
-    char key = 0;
-
-    for (uint8_t r = 0; r < ROWS; r++) {
-        PORTD &= ~0x0F;               // alle rijen laag
-        PORTD |= (1 << rowPins[r]);   // actieve rij hoog
-        _delay_us(50);                 // stabilisatie
-
-        for (uint8_t c = 0; c < COLS; c++) {
-            if (!(PINC & (1 << colPins[c]))) {
-                key = keys[r][c];
-                break;
-            }
-        }
-        if (key) break;
+// ---------------- HELPER ----------------
+int key_to_number(int key) {
+    switch (key) {
+        case ONE:   return 1;
+        case TWO:   return 2;
+        case THREE: return 3;
+        case FOUR:  return 4;
+        case FIVE:  return 5;
+        default:    return -1;
     }
-
-    // Single log: wacht tot loslaten
-    if (key && key != lastKey) {
-        _delay_ms(50); // debounce
-        lastKey = key;
-        return key;
-    } else if (!key) {
-        lastKey = 0;
-    }
-
-    return 0;
 }
 
+// Scan keypad, return key index 0–15, or -1 if none
+int keypad_getkey(void) {
+    for (uint8_t row = 0; row < 4; row++) {
+        // Drive one row LOW
+        ROW_PORT |= 0x0F;
+        ROW_PORT &= ~(1 << row);
 
-void processKey(char key) {
+        _delay_us(5); // settle time
+
+        // Read columns (active LOW)
+        uint8_t cols = ~COL_PIN & 0x0F;
+        if (cols) {
+            for (uint8_t col = 0; col < 4; col++) {
+                if (cols & (1 << col)) {
+                    return row * 4 + col; // key index 0–15
+                }
+            }
+        }
+    }
+    return -1; // no key
+}
+
+// ---------------- STATE MACHINE ----------------
+void processKey(int key) {
     switch (inputState) {
         case IDLE:
-            printf("NUMPAD_idle\n");
-            if (key == 'A') {
-                printf("A_in\n");
+            if ((infoEindPosOpgehaald == 1) && (infoEindPosOpgehaald2 == 1)) {
+                break; // already done
+            }
+            if (key == A) {
+                printf("A pressed\n");
                 inputState = PICKUP_X;
-            } else if (key == 'B') {
-                printf("B_in\n");
+            } else if (key == B) {
+                printf("B pressed\n");
                 inputState = DROPOFF_X;
-            } else if ((key == 'C') && (PIN_SwitchTweedeCoord & (1 << pinSwitchTweedeCoord))) {
+            } else if (key == C) {
+                printf("C pressed\n");
                 inputState = PICKUP_X2;
-            } else if ((key == 'D') && (PIN_SwitchTweedeCoord & (1 << pinSwitchTweedeCoord))) {
+            } else if (key == D) {
+                printf("D pressed\n");
                 inputState = DROPOFF_X2;
             }
-            if((infoEindPosOpgehaald == 1) && (infoEindPosOpgehaald2 == 1)){
-                break;
-            }
-
             break;
 
-        case PICKUP_X:
-            printf("PICKUP_X_in\n");
-            if (key >= '1' && key <= '5') {
-                xEind = key - '0';
+        case PICKUP_X: {
+            int num = key_to_number(key);
+            if (num != -1) {
+                xEind = num;
+                printf("Pickup X = %d\n", xEind);
                 inputState = PICKUP_Y;
-            } else {
-                infoEindPosOpgehaald = 0;
-                inputState = IDLE;  // wrong key cancels
             }
             break;
-
-        case PICKUP_Y:
-            printf("PICKUP_Y_in\n");
-            if (key >= '1' && key <= '5') {
-                yEind = key - '0';
-                infoEindPosOpgehaald = 1;
+        }
+        case PICKUP_Y: {
+            int num = key_to_number(key);
+            if (num != -1) {
+                yEind = num;
+                printf("Pickup Y = %d\n", yEind);
                 inputState = IDLE;
-            } else {
-                infoEindPosOpgehaald = 0;
-                inputState = IDLE;  // wrong key cancels
             }
             break;
+        }
 
-        case DROPOFF_X:
-            printf("DROPOFF_X_in\n");
-            if (key >= '1' && key <= '5') {
-                xEindDropOf = key - '0';
+        case DROPOFF_X: {
+            int num = key_to_number(key);
+            if (num != -1) {
+                xEindDropOf = num;
+                printf("Dropoff X = %d\n", xEindDropOf);
                 inputState = DROPOFF_Y;
-            } else {
-                infoEindPosOpgehaald = 0;
-                inputState = IDLE;
             }
             break;
-
-        case DROPOFF_Y:
-            printf("DROPOFF_Y_in\n");
-            if (key >= '1' && key <= '5') {
-                yEindDropOf = key - '0';
+        }
+        case DROPOFF_Y: {
+            int num = key_to_number(key);
+            if (num != -1) {
+                yEindDropOf = num;
+                printf("Dropoff Y = %d\n", yEindDropOf);
                 infoEindPosOpgehaald = 1;
                 inputState = IDLE;
-            } else {
-                infoEindPosOpgehaald = 0;
-                inputState = IDLE;
             }
             break;
+        }
 
-        case PICKUP_X2:
-            if (key >= '1' && key <= '5') {
-                xEind2 = key - '0';
+        case PICKUP_X2: {
+            int num = key_to_number(key);
+            if (num != -1) {
+                xEind2 = num;
+                printf("Pickup2 X = %d\n", xEind2);
                 inputState = PICKUP_Y2;
-            } else {
-                infoEindPosOpgehaald2 = 0;
-                inputState = IDLE;  // wrong key cancels
             }
             break;
-
-        case PICKUP_Y2:
-            if (key >= '1' && key <= '5') {
-                yEind2 = key - '0';
-                infoEindPosOpgehaald2 = 1;
+        }
+        case PICKUP_Y2: {
+            int num = key_to_number(key);
+            if (num != -1) {
+                yEind2 = num;
+                printf("Pickup2 Y = %d\n", yEind2);
                 inputState = IDLE;
-            } else {
-                infoEindPosOpgehaald2 = 0;
-                inputState = IDLE;  // wrong key cancels
             }
             break;
+        }
 
-        case DROPOFF_X2:
-            if (key >= '1' && key <= '5') {
-                xEindDropOf2 = key - '0';
+        case DROPOFF_X2: {
+            int num = key_to_number(key);
+            if (num != -1) {
+                xEindDropOf2 = num;
+                printf("Dropoff2 X = %d\n", xEindDropOf2);
                 inputState = DROPOFF_Y2;
-            } else {
-                infoEindPosOpgehaald2 = 0;
-                inputState = IDLE;
             }
             break;
-
-        case DROPOFF_Y2:
-            if (key >= '1' && key <= '5') {
-                yEindDropOf2 = key - '0';
+        }
+        case DROPOFF_Y2: {
+            int num = key_to_number(key);
+            if (num != -1) {
+                yEindDropOf2 = num;
+                printf("Dropoff2 Y = %d\n", yEindDropOf2);
                 infoEindPosOpgehaald2 = 1;
                 inputState = IDLE;
-            } else {
-                infoEindPosOpgehaald2 = 0;
-                inputState = IDLE;
             }
             break;
+        }
     }
 }
 
 void pickUp_and_DropOff_pos(void) {
-    printf("pickUp_and_DropOff_pos_in\n");
-    cli();
-    while (1) {
-        if((infoEindPosOpgehaald == 1) && (infoEindPosOpgehaald2 == 1)){
-                printf("pickUp_and_DropOff_pos_out\n");
-                sei();
-                startSlot = 1;
-                break;
-            }
+    printf("Waiting for coordinates...\n");
 
-        char key = keypad_getkey();
-        if (key) {
-            processKey(key);
+    // ✅ block until both coordinate pairs are filled
+    if(!(PIN_SwitchTweedeCoord & (1 << pinSwitchTweedeCoord))) {
+        while (!infoEindPosOpgehaald) {
+            int key = keypad_getkey();
+            if (key != -1) {
+                processKey(key);
+                _delay_ms(200); // crude debounce
+            }
+        }
+
+    }
+
+
+    // ✅ block until both coordinate pairs are filled
+    if(PIN_SwitchTweedeCoord & (1 << pinSwitchTweedeCoord)) {
+        while (!(infoEindPosOpgehaald && infoEindPosOpgehaald2)) {
+            int key = keypad_getkey();
+            if (key != -1) {
+                processKey(key);
+                _delay_ms(200); // crude debounce
+            }
         }
     }
+
+    printf("All coordinates received!\n");
+    startSlot = 1;
 }
+
+
+
