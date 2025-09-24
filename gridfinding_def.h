@@ -59,8 +59,11 @@ extern volatile int heenTerug;
 #define pos_Y4 PF0
 #define pos_Y5 PF1
 
+#define PORT_pos_XY PORTB
+#define PORT_pos_Y  PORTF
+
 // switches Z-pos
-#define pos_Z PD6
+#define pos_Z PA0
 
 // H-brug pinnen x/y
 #define pinHBrug_RechtsOm_X PF2
@@ -72,15 +75,15 @@ extern volatile int heenTerug;
 #define portHBrug_Y PORTF
 
 // H-brug pinnen z
-#define pinHBrug_RechtsOm_Z PD4
-#define pinHBrug_LinksOm_Z PD5
+#define pinHBrug_RechtsOm_Z PA1
+#define pinHBrug_LinksOm_Z PA2
 
 #define portHBrug_Z PORTD
 
 // pin check
-#define PIN_pos_XY PINB
+#define PIN_pos_XY  PINB
 #define PIN_pos_Y  PINF
-#define PIN_pos_Z  PIND
+#define PIN_pos_Z  PINA
 
 
 // Keypad
@@ -119,8 +122,8 @@ void xNuFinder(void);
 void yNuFinder(void);
 
 // Keypad Handling
-char keypad_getkey(void);
-void processKey(char key);
+int keypad_getkey(void);
+void processKey(int key);
 void pickUp_and_DropOff_pos(void);
 void keypad_init(void);
 
